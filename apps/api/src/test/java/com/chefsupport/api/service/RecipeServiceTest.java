@@ -16,6 +16,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+
+import com.chefsupport.api.web.dto.RecipeSummary;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -92,9 +95,9 @@ class RecipeServiceTest {
 
     when(repository.findAll()).thenReturn(List.of(a, b));
 
-    var results = service.list("pa", new BigDecimal("500"), null, List.of());
-    assertEquals(1, results.size());
-    assertEquals("Pasta", results.get(0).getName());
+    Page<RecipeSummary> page = service.list("pa", new BigDecimal("500"), null, List.of(), 0, 20);
+    assertEquals(1, page.getContent().size());
+    assertEquals("Pasta", page.getContent().get(0).getName());
   }
 }
 

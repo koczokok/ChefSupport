@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -29,12 +31,16 @@ class RecipeControllerTest {
 
   @Test
   void list_empty_ok() throws Exception {
-    Mockito.when(service.list(null, null, null, null)).thenReturn(List.of());
+    Mockito.when(service.list(null, null, null, null, 0, 20))
+        .thenReturn(new PageImpl<>(List.of(), PageRequest.of(0, 20), 0));
 
     mvc.perform(get("/api/recipes"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$", hasSize(0)));
+        .andExpect(jsonPath("$.items", hasSize(0)))
+        .andExpect(jsonPath("$.page", is(0)))
+        .andExpect(jsonPath("$.size", is(20)))
+        .andExpect(jsonPath("$.total", is(0)));
   }
 
   @Test
